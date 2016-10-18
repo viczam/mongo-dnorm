@@ -40,7 +40,6 @@ export default class RefManager {
     }
 
     if (!parsedConfig.ns) {
-      parsedConfig.ns = `_${destinationPropr}${type === types.many ? 's' : ''}`;
       parsedConfig.ns = `_${type === types.many ? pluralize(destinationPropr) : destinationPropr}`;
     }
 
