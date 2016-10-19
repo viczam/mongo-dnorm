@@ -1,0 +1,49 @@
+exports[`Octobus it should populate the cache after insert for type=one reference 1`] = `
+Array [
+  Object {
+    "_category": Object {
+      "name": "category1"
+    },
+    "name": "product1"
+  },
+  Object {
+    "_category": Object {
+      "name": "category2"
+    },
+    "name": "product2"
+  },
+  Object {
+    "_category": Object {
+      "name": "category4"
+    },
+    "name": "product3"
+  },
+  Object {
+    "_category": Object {
+      "name": "category4"
+    },
+    "name": "product4"
+  }
+]
+`;
+
+exports[`Octobus stores the references configuration 1`] = `
+Object {
+  "Category": Object {
+    "productIds": Object {
+      "collection": "Product",
+      "extractor": [Function extractor],
+      "ns": "_products",
+      "type": "many"
+    }
+  },
+  "Product": Object {
+    "categoryId": Object {
+      "collection": "Category",
+      "extractor": [Function extractor],
+      "ns": "_category",
+      "type": "one"
+    }
+  }
+}
+`;

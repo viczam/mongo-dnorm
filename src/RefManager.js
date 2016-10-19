@@ -66,7 +66,7 @@ export default class RefManager {
 
     this.onUpdate({ source, destination, refProperty, extractor, type, ns });
 
-    this.onRemove({ source, destination, refProperty, ns });
+    this.onRemove({ source, destination, refProperty, type, ns });
 
     return this;
   }
@@ -113,12 +113,17 @@ export default class RefManager {
         update = refConfig.extractor(
           refsMap[refPropr].find(({ _id }) => doc[refPropr].toString() === _id.toString())
         );
-      } else {
+      } else if (Array.isArray(doc[refPropr])) {
         update = doc[refPropr].reduce((r, id) => ({
           ...r,
-          [id.toString()]:
-            refsMap[refPropr].find(({ _id }) => id.toString() === _id.toString()),
+          [id.toString()]: refConfig.extractor(
+            refsMap[refPropr].find(({ _id }) => id.toString() === _id.toString())
+          ),
         }), {});
+      }
+
+      if (!update) {
+        return acc;
       }
 
       return {
@@ -131,7 +136,6 @@ export default class RefManager {
   onInsert({ source }) {
     this.on(operations.insert, source, async ({ data }) => {
       const docs = Array.isArray(data) ? data : [data];
-
       const refsConfig = this.references[source];
       const refPropsList = Object.keys(refsConfig);
 
@@ -145,13 +149,23 @@ export default class RefManager {
       }), {});
 
       const bulk = this.db.collection(source).initializeUnorderedBulkOp();
+      let hasOperations = false;
       docs.forEach((doc) => {
-        bulk.find({ _id: doc._id }).updateOne({
-          $set: this.getDocUpdatePayload({ doc, refsConfig, refsMap }),
-        });
+        const updatePayload = this.getDocUpdatePayload({ doc, refsConfig, refsMap });
+        const hasUpdates = Object.keys(updatePayload).length;
+        if (hasUpdates) {
+          hasOperations = true;
+          bulk.find({ _id: doc._id }).updateOne({
+            $set: updatePayload,
+          });
+        }
       });
 
-      return bulk.execute();
+      if (hasOperations) {
+        return bulk.execute();
+      }
+
+      return Promise.reject(new Error('No operations!'));
     });
   }
 
@@ -169,6 +183,8 @@ export default class RefManager {
           $set: {
             [updateNS]: extractor(doc),
           },
+        }, {
+          multi: true,
         });
       });
 
@@ -176,18 +192,28 @@ export default class RefManager {
     });
   }
 
-  onRemove({ source, destination, refProperty, ns }) {
+  onRemove({ source, destination, refProperty, type, ns }) {
     this.on(operations.remove, destination, async ({ query }) => {
       const refDocs = await this.db.collection(destination).find(query, { _id: 1 }).toArray();
       const refDocsIds = refDocs.map(({ _id }) => _id);
+      const updatePayload = {
+        $unset: {},
+      };
+
+      if (type === types.one) {
+        updatePayload.$unset[ns] = '';
+      } else {
+        refDocsIds.forEach((id) => {
+          updatePayload.$unset[`${ns}.${id}`] = '';
+        });
+      }
+
       return this.db.collection(source).update({
         [refProperty]: {
           $in: refDocsIds,
         },
-      }, {
-        $unset: {
-          [ns]: '',
-        },
+      }, updatePayload, {
+        multi: true,
       });
     });
   }
