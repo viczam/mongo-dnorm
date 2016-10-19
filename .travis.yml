@@ -1,3 +1,5 @@
+services:
+  - mongodb
 os:
   - linux
   - osx
