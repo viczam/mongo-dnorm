@@ -13,6 +13,10 @@ describe('Octobus', () => {
     })
   ));
 
+  afterAll(() => {
+    db.close();
+  });
+
   beforeEach(() => (
     db.dropDatabase().then(async () => {
       rm = new RefManager(db);
