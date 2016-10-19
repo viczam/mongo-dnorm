@@ -1,7 +1,6 @@
 services:
   - mongodb
 os:
-  - linux
   - osx
 sudo: false
 language: node_js
