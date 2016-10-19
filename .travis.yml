@@ -2,12 +2,6 @@ os:
   - linux
   - osx
 sudo: false
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
 language: node_js
 cache:
   directories:
@@ -17,14 +11,11 @@ notifications:
 node_js:
   - '6'
 before_install:
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
   - npm i -g npm@^3.0.0
 before_script:
   - npm prune
 script:
   - npm run test
-after_success:
-  - npm run semantic-release
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
