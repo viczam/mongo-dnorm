@@ -1,27 +1,84 @@
+exports[`Octobus it should populate the cache after insert for type=many reference 1`] = `
+Array [
+  Object {
+    "_id": 3,
+    "name": "category3"
+  },
+  Object {
+    "_id": 1,
+    "_products": Object {
+      "1": Object {
+        "name": "product1"
+      }
+    },
+    "name": "category1",
+    "productIds": Array [
+      1
+    ]
+  },
+  Object {
+    "_id": 2,
+    "_products": Object {
+      "2": Object {
+        "name": "product2"
+      }
+    },
+    "name": "category2",
+    "productIds": Array [
+      2
+    ]
+  },
+  Object {
+    "_id": 4,
+    "_products": Object {
+      "3": Object {
+        "name": "product3"
+      },
+      "4": Object {
+        "name": "product4"
+      }
+    },
+    "name": "category4",
+    "productIds": Array [
+      3,
+      4
+    ]
+  }
+]
+`;
+
 exports[`Octobus it should populate the cache after insert for type=one reference 1`] = `
 Array [
   Object {
     "_category": Object {
       "name": "category1"
     },
+    "_id": 1,
+    "categoryId": 1,
     "name": "product1"
   },
   Object {
     "_category": Object {
       "name": "category2"
     },
+    "_id": 2,
+    "categoryId": 2,
     "name": "product2"
   },
   Object {
     "_category": Object {
       "name": "category4"
     },
+    "_id": 3,
+    "categoryId": 4,
     "name": "product3"
   },
   Object {
     "_category": Object {
       "name": "category4"
     },
+    "_id": 4,
+    "categoryId": 4,
     "name": "product4"
   }
 ]

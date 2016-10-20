@@ -21,31 +21,31 @@ describe('Octobus', () => {
     db.dropDatabase().then(async () => {
       rm = new RefManager(db);
 
-      rm.add({
-        source: 'Product',
-        destination: 'Category',
-        extractor: ({ name }) => ({ name }),
-      });
-
-      rm.add({
-        source: 'Category',
-        destination: 'Product',
-        type: 'many',
-        extractor: ({ name }) => ({ name }),
-      });
+      rm
+        .add({
+          source: 'Product',
+          destination: 'Category',
+          extractor: ({ name }) => ({ name }),
+        })
+        .add({
+          source: 'Category',
+          destination: 'Product',
+          type: 'many',
+          extractor: ({ name }) => ({ name }),
+        });
 
       categories = (await db.collection('Category').insert([
-        { name: 'category1' },
-        { name: 'category2' },
-        { name: 'category3' },
-        { name: 'category4' },
+        { _id: 1, name: 'category1' },
+        { _id: 2, name: 'category2' },
+        { _id: 3, name: 'category3' },
+        { _id: 4, name: 'category4' },
       ])).ops;
 
       products = (await db.collection('Product').insert([
-        { name: 'product1', categoryId: categories[0]._id },
-        { name: 'product2', categoryId: categories[1]._id },
-        { name: 'product3', categoryId: categories[3]._id },
-        { name: 'product4', categoryId: categories[3]._id },
+        { _id: 1, name: 'product1', categoryId: categories[0]._id },
+        { _id: 2, name: 'product2', categoryId: categories[1]._id },
+        { _id: 3, name: 'product3', categoryId: categories[3]._id },
+        { _id: 4, name: 'product4', categoryId: categories[3]._id },
       ])).ops;
 
       await Promise.all([
@@ -83,33 +83,14 @@ describe('Octobus', () => {
   describe('it should populate the cache after insert', () => {
     it('for type=one reference', async () => {
       await rm.notifyInsert('Product', products);
-      const productsWithReferences = (await db.collection('Product').find().toArray())
-        .map(({ _category, name }) => ({
-          _category,
-          name,
-        }));
-
+      const productsWithReferences = await db.collection('Product').find().toArray();
       expect(productsWithReferences).toMatchSnapshot();
     });
 
     it('for type=many reference', async () => {
       await rm.notifyInsert('Category', categories);
       const categoriesWithReferences = await db.collection('Category').find().toArray();
-      const firstCategory = categoriesWithReferences.find(({ name }) => name === 'category1');
-      const fourthCategory = categoriesWithReferences.find(({ name }) => name === 'category4');
-      expect(firstCategory._products).toBeDefined();
-      expect(firstCategory._products[products[0]._id.toString()]).toEqual({
-        name: 'product1',
-      });
-      expect(fourthCategory._products).toBeDefined();
-      expect(fourthCategory._products).toEqual({
-        [products[2]._id.toString()]: {
-          name: 'product3',
-        },
-        [products[3]._id.toString()]: {
-          name: 'product4',
-        },
-      });
+      expect(categoriesWithReferences).toMatchSnapshot();
     });
   });
 });
