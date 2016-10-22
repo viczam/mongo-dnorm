@@ -7,13 +7,13 @@ describe('Octobus', () => {
   let products;
   let categories;
 
-  beforeAll(() => (
+  beforeAll(() => ( // eslint-disable-line
     MongoClient.connect('mongodb://localhost:27017/mdnorm').then((_db) => {
       db = _db;
     })
   ));
 
-  afterAll(() => {
+  afterAll(() => { // eslint-disable-line
     db.close();
   });
 
@@ -82,13 +82,13 @@ describe('Octobus', () => {
 
   describe('it should populate the cache after insert', () => {
     it('for type=one reference', async () => {
-      await rm.notifyInsert('Product', products);
+      await rm.sync({ collection: 'Product', data: products });
       const productsWithReferences = await db.collection('Product').find().toArray();
       expect(productsWithReferences).toMatchSnapshot();
     });
 
     it('for type=many reference', async () => {
-      await rm.notifyInsert('Category', categories);
+      await rm.sync({ collection: 'Category', data: categories });
       const categoriesWithReferences = await db.collection('Category').find().toArray();
       expect(categoriesWithReferences).toMatchSnapshot();
     });

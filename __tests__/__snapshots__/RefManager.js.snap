@@ -85,22 +85,28 @@ Array [
 `;
 
 exports[`Octobus stores the references configuration 1`] = `
-Object {
-  "Category": Object {
-    "productIds": Object {
-      "collection": "Product",
-      "extractor": [Function extractor],
-      "ns": "_products",
-      "type": "many"
+Array [
+  Array [
+    "Product",
+    Object {
+      "categoryId": Object {
+        "collection": "Category",
+        "extractor": [Function extractor],
+        "ns": "_category",
+        "type": "one"
+      }
     }
-  },
-  "Product": Object {
-    "categoryId": Object {
-      "collection": "Category",
-      "extractor": [Function extractor],
-      "ns": "_category",
-      "type": "one"
+  ],
+  Array [
+    "Category",
+    Object {
+      "productIds": Object {
+        "collection": "Product",
+        "extractor": [Function extractor],
+        "ns": "_products",
+        "type": "many"
+      }
     }
-  }
-}
+  ]
+]
 `;
