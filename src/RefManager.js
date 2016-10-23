@@ -25,7 +25,18 @@ export default class RefManager {
     return this;
   }
 
-  async sync({ collection, references, data }) {
+  async sync({ collection, references, data, cursor }) {
+    if (cursor) {
+      const result = [];
+      while (await cursor.hasNext()) {
+        const next = await cursor.next();
+        const res = await this.sync({ collection, references, data: next });
+        result.push(res);
+      }
+
+      return result;
+    }
+
     const docs = Array.isArray(data) ? data : [data];
     const refsConfig = this.references.get(collection);
     const refPropsList = Array.isArray(references) ? references : Object.keys(refsConfig);
@@ -53,7 +64,19 @@ export default class RefManager {
       return bulk.execute();
     }
 
-    return Promise.reject(new Error('No operations!'));
+    return Promise.resolve(false);
+  }
+
+  async syncAll({ collections }) {
+    if (!collections) {
+      collections = Array.from(this.references.getCollections()); // eslint-disable-line
+    }
+
+    return Promise.all(
+      collections.map(
+        (collection) => this.sync({ collection, cursor: this.db.collection(collection).find() })
+      )
+    );
   }
 
   onUpdate({ source, destination, refProperty, extractor, type, ns }) {

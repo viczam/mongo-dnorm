@@ -104,4 +104,8 @@ export default class RefStore extends Map {
 
     return this;
   }
+
+  getCollections() {
+    return this.keys();
+  }
 }
