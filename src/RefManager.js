@@ -27,14 +27,12 @@ export default class RefManager {
 
   async sync({ collection, references, data, cursor }) {
     if (cursor) {
-      const result = [];
       while (await cursor.hasNext()) {
         const next = await cursor.next();
-        const res = await this.sync({ collection, references, data: next });
-        result.push(res);
+        await this.sync({ collection, references, data: next });
       }
 
-      return result;
+      return Promise.resolve();
     }
 
     const docs = Array.isArray(data) ? data : [data];
@@ -64,7 +62,7 @@ export default class RefManager {
       return bulk.execute();
     }
 
-    return Promise.resolve(false);
+    return Promise.resolve();
   }
 
   async syncAll({ collections }) {
