@@ -93,6 +93,10 @@ Array [
         "collection": "Category",
         "extractor": [Function extractor],
         "ns": "_category",
+        "syncOn": Array [
+          "update",
+          "remove"
+        ],
         "type": "one"
       }
     }
@@ -104,6 +108,10 @@ Array [
         "collection": "Product",
         "extractor": [Function extractor],
         "ns": "_products",
+        "syncOn": Array [
+          "update",
+          "remove"
+        ],
         "type": "many"
       }
     }

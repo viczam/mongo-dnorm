@@ -9,16 +9,18 @@ export default class RefManager {
     this.references = new RefStore();
   }
 
-  add(config) {
-    const {
-      source, destination, refProperty, type, ns, extractor,
-    } = RefStore.parseRefConfig(config);
+  add(rawConfig) {
+    const config = RefStore.parseRefConfig(rawConfig);
 
     this.references.add(config);
 
-    this.onUpdate({ source, destination, refProperty, extractor, type, ns });
+    if (config.syncOn.includes(operations.update)) {
+      this.onUpdate(config);
+    }
 
-    this.onRemove({ source, destination, refProperty, type, ns });
+    if (config.syncOn.includes(operations.remove)) {
+      this.onRemove(config);
+    }
 
     return this;
   }

@@ -4,7 +4,6 @@ export const types = {
 };
 
 export const operations = {
-  insert: 'insert',
   update: 'update',
   remove: 'remove',
 };

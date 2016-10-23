@@ -87,7 +87,7 @@ export default class RefStore extends Map {
 
   add(config) {
     const {
-      source, destination, refProperty, type, ns, extractor,
+      source, destination, refProperty, type, ns, extractor, syncOn,
     } = RefStore.parseRefConfig(config);
 
     if (!this.has(source)) {
@@ -99,7 +99,7 @@ export default class RefStore extends Map {
       type,
       ns,
       extractor,
-      // syncOn: ['update', 'delete'],
+      syncOn,
     };
 
     return this;
