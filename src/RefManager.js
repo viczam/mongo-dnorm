@@ -1,6 +1,7 @@
 import { operations, types } from './constants';
 import RefStore from './RefStore';
 import Events from './Events';
+import set from 'lodash/set';
 
 export default class RefManager {
   constructor(db) {
@@ -25,7 +26,15 @@ export default class RefManager {
     return this;
   }
 
-  async sync({ collection, references, data, cursor, visit = () => {} }) {
+  async sync({
+    collection,
+    references,
+    data,
+    cursor,
+    visit = () => {},
+    applyUpdate = true,
+    runBulkOperation = true,
+  }) {
     if (cursor) {
       while (await cursor.hasNext()) {
         const next = await cursor.next();
@@ -47,19 +56,29 @@ export default class RefManager {
     }), {});
 
     const bulk = this.db.collection(collection).initializeUnorderedBulkOp();
+
     let hasOperations = false;
     docs.forEach((doc) => {
       const updatePayload = RefStore.getDocUpdatePayload({ doc, refsConfig, refsMap });
       const hasUpdates = Object.keys(updatePayload).length;
       if (hasUpdates) {
         hasOperations = true;
-        bulk.find({ _id: doc._id }).updateOne({
-          $set: updatePayload,
-        });
+
+        if (runBulkOperation) {
+          bulk.find({ _id: doc._id }).updateOne({
+            $set: updatePayload,
+          });
+        }
+
+        if (applyUpdate) {
+          Object.keys(updatePayload).forEach((key) => {
+            set(doc, key, updatePayload[key]);
+          });
+        }
       }
     });
 
-    if (hasOperations) {
+    if (hasOperations && runBulkOperation) {
       return bulk.execute();
     }
 
