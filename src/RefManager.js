@@ -25,11 +25,12 @@ export default class RefManager {
     return this;
   }
 
-  async sync({ collection, references, data, cursor }) {
+  async sync({ collection, references, data, cursor, visit = () => {} }) {
     if (cursor) {
       while (await cursor.hasNext()) {
         const next = await cursor.next();
-        await this.sync({ collection, references, data: next });
+        const result = await this.sync({ collection, references, data: next });
+        visit(result);
       }
 
       return Promise.resolve();
