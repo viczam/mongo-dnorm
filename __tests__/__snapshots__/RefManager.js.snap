@@ -1,10 +1,6 @@
 exports[`Octobus it should populate the cache after insert for type=many reference 1`] = `
 Array [
   Object {
-    "_id": 3,
-    "name": "category3"
-  },
-  Object {
     "_id": 1,
     "_products": Object {
       "1": Object {
@@ -27,6 +23,10 @@ Array [
     "productIds": Array [
       2
     ]
+  },
+  Object {
+    "_id": 3,
+    "name": "category3"
   },
   Object {
     "_id": 4,
@@ -116,5 +116,121 @@ Array [
       }
     }
   ]
+]
+`;
+
+exports[`Octobus sync cache after an update for type=many reference 1`] = `
+Array [
+  Object {
+    "_id": 4,
+    "_products": Object {
+      "3": Object {
+        "name": "update product name"
+      },
+      "4": Object {
+        "name": "update product name"
+      }
+    },
+    "name": "category4",
+    "productIds": Array [
+      3,
+      4
+    ]
+  }
+]
+`;
+
+exports[`Octobus sync cache after an update for type=one reference 1`] = `
+Array [
+  Object {
+    "_category": Object {
+      "name": "category 4 updated"
+    },
+    "_id": 3,
+    "categoryId": 4,
+    "name": "product3"
+  },
+  Object {
+    "_category": Object {
+      "name": "category 4 updated"
+    },
+    "_id": 4,
+    "categoryId": 4,
+    "name": "product4"
+  }
+]
+`;
+
+exports[`Octobus sync cache after delete for type=many reference 1`] = `
+Array [
+  Object {
+    "_id": 1,
+    "_products": Object {
+      "1": Object {
+        "name": "product1"
+      }
+    },
+    "name": "category1",
+    "productIds": Array [
+      1
+    ]
+  },
+  Object {
+    "_id": 2,
+    "_products": Object {
+      "2": Object {
+        "name": "product2"
+      }
+    },
+    "name": "category2",
+    "productIds": Array [
+      2
+    ]
+  },
+  Object {
+    "_id": 3,
+    "name": "category3"
+  },
+  Object {
+    "_id": 4,
+    "_products": Object {
+      "4": Object {
+        "name": "product4"
+      }
+    },
+    "name": "category4",
+    "productIds": Array [
+      4
+    ]
+  }
+]
+`;
+
+exports[`Octobus sync cache after delete for type=one reference 1`] = `
+Array [
+  Object {
+    "_category": Object {
+      "name": "category1"
+    },
+    "_id": 1,
+    "categoryId": 1,
+    "name": "product1"
+  },
+  Object {
+    "_category": Object {
+      "name": "category2"
+    },
+    "_id": 2,
+    "categoryId": 2,
+    "name": "product2"
+  },
+  Object {
+    "_id": 3,
+    "name": "product3"
+  },
+  Object {
+    "_id": 4,
+    "name": "product4"
+  }
 ]
 `;

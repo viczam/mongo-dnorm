@@ -130,9 +130,13 @@ export default class RefManager {
 
       if (type === types.one) {
         updatePayload.$unset[ns] = '';
+        updatePayload.$unset[refProperty] = '';
       } else {
         refDocsIds.forEach((id) => {
           updatePayload.$unset[`${ns}.${id}`] = '';
+          updatePayload.$pull = {
+            [refProperty]: id,
+          };
         });
       }
 
