@@ -85,7 +85,7 @@ export default class RefManager {
     return Promise.resolve();
   }
 
-  async syncAll({ collections }) {
+  async syncAll({ collections } = {}) {
     if (!collections) {
       collections = Array.from(this.references.getCollections()); // eslint-disable-line
     }

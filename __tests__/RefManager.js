@@ -4,21 +4,10 @@ import { MongoClient } from 'mongodb';
 describe('Octobus', () => {
   let rm;
   let db;
-  let products;
-  let categories;
 
   beforeAll(() => ( // eslint-disable-line
     MongoClient.connect('mongodb://localhost:27017/mdnorm').then((_db) => {
       db = _db;
-    })
-  ));
-
-  afterAll(() => { // eslint-disable-line
-    db.close();
-  });
-
-  beforeEach(() => (
-    db.dropDatabase().then(async () => {
       rm = new RefManager(db);
 
       rm
@@ -33,23 +22,33 @@ describe('Octobus', () => {
           type: 'many',
           extractor: ({ name }) => ({ name }),
         });
+    })
+  ));
 
-      categories = (await db.collection('Category').insert([
+  afterAll(() => { // eslint-disable-line
+    db.close();
+  });
+
+  beforeEach(() => (
+    Promise.all([
+      db.collection('Category').remove(),
+      db.collection('Product').remove(),
+    ]).then(async () => {
+      await db.collection('Category').insert([
         { _id: 1, name: 'category1', productIds: [1] },
         { _id: 2, name: 'category2', productIds: [2] },
         { _id: 3, name: 'category3' },
         { _id: 4, name: 'category4', productIds: [3, 4] },
-      ])).ops;
+      ]);
 
-      products = (await db.collection('Product').insert([
+      await db.collection('Product').insert([
         { _id: 1, name: 'product1', categoryId: 1 },
         { _id: 2, name: 'product2', categoryId: 2 },
         { _id: 3, name: 'product3', categoryId: 4 },
         { _id: 4, name: 'product4', categoryId: 4 },
-      ])).ops;
+      ]);
 
-      await rm.sync({ collection: 'Product', data: products });
-      await rm.sync({ collection: 'Category', data: categories });
+      await rm.syncAll();
     })
   ));
 
@@ -64,7 +63,6 @@ describe('Octobus', () => {
     });
 
     it('for type=many reference', async () => {
-      await rm.sync({ collection: 'Category', data: categories });
       const categoriesWithReferences = await db.collection('Category').find().toArray();
       expect(categoriesWithReferences).toMatchSnapshot();
     });
