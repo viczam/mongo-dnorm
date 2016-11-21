@@ -130,11 +130,10 @@ export default class RefManager {
         updatePayload.$unset[ns] = '';
         updatePayload.$unset[refProperty] = '';
       } else {
+        updatePayload.$pull = { [refProperty]: { $in: [] } };
         refDocsIds.forEach((id) => {
           updatePayload.$unset[`${ns}.${id}`] = '';
-          updatePayload.$pull = {
-            [refProperty]: id,
-          };
+          updatePayload.$pull[refProperty].$in.push(id);
         });
       }
 
