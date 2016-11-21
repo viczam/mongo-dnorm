@@ -31,15 +31,13 @@ export default class RefManager {
     references,
     data,
     cursor,
-    visit = () => {},
     applyUpdate = true,
     runBulkOperation = true,
   }) {
     if (cursor) {
       while (await cursor.hasNext()) {
         const next = await cursor.next();
-        const result = await this.sync({ collection, references, data: next });
-        visit(result);
+        await this.sync({ collection, references, data: next });
       }
 
       return Promise.resolve();
