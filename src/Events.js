@@ -17,7 +17,7 @@ export default class Events extends Map {
 
   emit(operation, collection, ...rest) {
     return Promise.all(
-      this.get(operation)[collection].map((handler) => handler(...rest))
+      (this.get(operation)[collection] || []).map((handler) => handler(...rest))
     );
   }
 
